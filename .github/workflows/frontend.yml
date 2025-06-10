@@ -33,7 +33,7 @@ jobs:
       - name: Run ESLint
         run: |
           cd starter/frontend
-          npm run lint --ignore-pattern '/.github/workflows/frontend.yml'
+          npm run lint src/**/*.{js,jsx}
 
   test:
     name: Tests
