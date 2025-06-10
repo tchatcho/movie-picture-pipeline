@@ -1,5 +1,5 @@
 variable "k8s_version" {
-  default = "1.33"
+  default = "1.32"
 }
 
 variable "enable_private" {
