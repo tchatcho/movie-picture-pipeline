@@ -33,7 +33,7 @@ jobs:
       - name: Run ESLint
         run: |
           cd starter/frontend
-          npm run lint
+          npm run lint --ignore-pattern '.github/workflows/frontend.yml'
 
   test:
     name: Tests
@@ -56,7 +56,7 @@ jobs:
       - name: Run Tests
         run: |
           cd starter/frontend
-          npm test -- --watchAll=false
+          npm test 
 
   build:
     name: Build Frontend Docker Image
