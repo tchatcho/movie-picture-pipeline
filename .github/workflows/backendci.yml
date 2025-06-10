@@ -35,6 +35,10 @@ jobs:
           cd starter/backend
           pipenv install
 
+      - name: Ensure flake8 is in Pipfile
+        run: |
+          pipenv install --dev flake8
+
       - name: Run Flake8
         run: |
           pipenv run flake8 .
