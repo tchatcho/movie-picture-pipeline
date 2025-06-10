@@ -8,7 +8,7 @@ on:
 
 env:
   AWS_REGION: us-east-1
-  ECR_REPOSITORY: frontend-app
+  # ECR_REPOSITORY: frontend-app
   IMAGE_TAG: ${{ github.sha }}
   REACT_APP_MOVIE_API_URL: https://api.example.com/movies
 
@@ -80,6 +80,43 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ${{ env.AWS_REGION }}
+      
+      # Set up the specified version of Terraform
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+      
+      # Initialize your Terraform configuration
+      - name: Terraform Init
+        run: |
+          cd setup/terraform
+          terraform init
+
+      # Validate your Terraform configuration
+      - name: Terraform Validate
+        run: |
+          cd setup/terraform
+          terraform validate 
+
+      # Generate and display an execution plan
+      - name: Terraform Plan
+        run: |
+          cd setup/terraform
+          terraform plan 
+
+      # Apply the changes required to reach the desired state of the configuration
+      - name: Terraform Apply
+        run: |
+          cd setup/terraform
+          terraform apply -auto-approve
+
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Get Terraform Outputs
+        id: tf_outputs
+        run: |
+          terraform output -json > tf_outputs.json
+          echo "FRONTEND_ECR=$(jq -r .frontend_ecr.value tf_outputs.json)" >> $GITHUB_ENV
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -90,18 +127,19 @@ jobs:
       #     docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
       #     docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
-
       - name: Build and tag Docker image  
         run: |
           docker build \
             --build-arg REACT_APP_MOVIE_API_URL=${{ env.REACT_APP_MOVIE_API_URL }} \
-            -t ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }} \
+            # -t ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }} \
+            -t ${{ "FRONTEND_ECR }}:${{ env.IMAGE_TAG }} \
             ./starter/frontend
 
       - name: Push image to ECR
         run: |
-          docker push ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+          docker push ${{ "FRONTEND_ECR }}:${{ env.IMAGE_TAG }}
 
+    
       # - name: Update K8s Deployment in EKS
       #   run: |
       #     aws eks update-kubeconfig --region ${{ env.AWS_REGION }} --name my-eks-cluster
