@@ -36,16 +36,6 @@ jobs:
           pipenv install
           pipenv install --dev flake8
 
-      # - name: Ensure flake8 is in Pipfile
-      #   run: |
-      #     cd starter/backend
-      #     pipenv install --dev flake8
-
-      # - name: Run Flake8
-      #   run: |
-      #     cd starter/backend
-      #     pipenv run flake8 . --max-line-length=200
-
       - name: Run ESLint
         run: |
           cd starter/backend
@@ -76,7 +66,7 @@ jobs:
 
       - name: Run Tests
         run: |
-          cd starter/frontend
+          cd starter/backend
           pipenv run test 
 
   build:
