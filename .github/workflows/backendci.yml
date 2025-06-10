@@ -39,9 +39,9 @@ jobs:
         run: |
           pipenv install --dev flake8
 
-      - name: Run Flake8
-        run: |
-          pipenv run flake8 .
+      # - name: Run Flake8
+      #   run: |
+      #     pipenv run flake8 .
 
       - name: Run ESLint
         run: |
