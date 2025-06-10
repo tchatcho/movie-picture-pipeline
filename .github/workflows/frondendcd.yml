@@ -93,12 +93,6 @@ jobs:
           cd setup/terraform
           terraform init
 
-      # Initialize your Terraform configuration
-      - name: Terraform destroy
-        run: |
-          cd setup/terraform
-          terraform destroy
-
       # Validate your Terraform configuration
       - name: Terraform Validate
         run: |
