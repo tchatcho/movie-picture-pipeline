@@ -1,4 +1,4 @@
-name: Movie Picture Frontend Integration
+name: Movie Picture Backend Integration
 
 on:
 
@@ -8,32 +8,32 @@ on:
     branches: 
       - main
     paths:
-      - 'starter/frontend/**'
+      - 'starter/backend/**'
 
 jobs:
 
   lint:
-    name: Lint TypeScript Code
+    name: Lint backend Code
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          node-version: '18'
+          python-version: '3.11'
 
       - name: Install dependencies
         run: |
-          cd starter/frontend
-          npm ci
+          cd starter/backend
+          pipenv install
 
       - name: Run ESLint
         run: |
-          cd starter/frontend
-          npm run lint
+          cd starter/backend
+          pipenv run lint
 
   test:
     name: Tests
@@ -43,23 +43,23 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          node-version: '18'
+          python-version: '3.11'
 
       - name: Install dependencies
         run: |
-          cd starter/frontend
-          npm ci
+          cd starter/backend
+          pipenv install
 
       - name: Run Tests
         run: |
           cd starter/frontend
-          npm test 
+          pipenv run test 
 
   build:
-    name: Build Frontend Docker Image
+    name: Build Backend Docker Image
     runs-on: ubuntu-latest
     needs:
       - lint
@@ -75,4 +75,4 @@ jobs:
       - name: Build Docker image
         run: |
           cd starter/frontend
-          docker build --build-arg=REACT_APP_MOVIE_API_URL=http://localhost:5000 --tag=mp-frontend:latest .
+          docker build --tag mp-backend:latest .
