@@ -120,19 +120,19 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Display application URLs
-        id: get_be_service_url
-        run: |
-          cd starter/frontend/k8s
-          kubectl get svc -A
-          BE_SERVICE_URL=$(kubectl get svc backend -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
-            echo "BE_SERVICE_URL=${BE_SERVICE_URL}"
-            echo "::set-output name=be_service_url::${BE_SERVICE_URL}" 
+      # - name: Display application URLs
+      #   id: get_be_service_url
+      #   run: |
+      #     cd starter/frontend/k8s
+      #     kubectl get svc -A
+      #     BE_SERVICE_URL=$(kubectl get svc backend -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+      #       echo "BE_SERVICE_URL=${BE_SERVICE_URL}"
+      #       echo "::set-output name=be_service_url::${BE_SERVICE_URL}" 
 
       - name: Build and tag Docker image  
         run: |
           docker build \
-            --build-arg=REACT_APP_MOVIE_API_URL=http://${{ steps.get_be_service_url.outputs.be_service_url }} \
+            --build-arg=REACT_APP_MOVIE_API_URL=http://${{ REACT_APP_MOVIE_API_URL }} \
             -t ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }} \
             ./starter/frontend
 
