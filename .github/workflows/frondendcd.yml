@@ -132,7 +132,7 @@ jobs:
       - name: Build and tag Docker image  
         run: |
           docker build \
-            --build-arg=REACT_APP_MOVIE_API_URL=http://${{ REACT_APP_MOVIE_API_URL }} \
+            --build-arg REACT_APP_MOVIE_API_URL=http://${{ env.REACT_APP_MOVIE_API_URL }} \
             -t ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }} \
             ./starter/frontend
 
