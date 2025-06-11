@@ -10,7 +10,7 @@ env:
   AWS_REGION: us-east-1
   ECR_REPOSITORY: frontend
   IMAGE_TAG: ${{ github.sha }}
-  REACT_APP_MOVIE_API_URL: http://localhost:5000
+  REACT_APP_MOVIE_API_URL: af1624b256904432a8a1804ecac5d165-147004239.us-east-1.elb.amazonaws.com
 
 jobs:
   lint:
@@ -65,9 +65,6 @@ jobs:
     needs: 
       - lint
       - test
-    # permissions:
-    #   contents: read
-    #   id-token: write
 
     steps:
       - name: Checkout Code
@@ -78,7 +75,6 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          #aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ${{ env.AWS_REGION }}
       
       # # Set up the specified version of Terraform
@@ -124,11 +120,6 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      # - name: Build, tag, and push docker image to Amazon ECR
-      #   run: |
-      #     docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
-      #     docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
-
       - name: Build and tag Docker image  
         run: |
           docker build \
@@ -144,8 +135,7 @@ jobs:
       - name: Update K8s Deployment in EKS
         run: |
           aws eks update-kubeconfig --region ${{ env.AWS_REGION }} --name cluster
-      #     kubectl set image deployment/frontend-deployment frontend-container=$(aws sts get-caller-identity --query Account --output text).dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
-      #     kubectl rollout status deployment/frontend-deployment
+    
 
       - name: Set up Kustomize
         uses: syntaqx/setup-kustomize@v1
@@ -155,5 +145,5 @@ jobs:
           cd starter/frontend/k8s
           kustomize edit set image ${{ env.ECR_REPOSITORY }}=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
           kustomize build | kubectl apply -f -
-         # kubectl rollout status deployment/frontend-deployment
+        
       
