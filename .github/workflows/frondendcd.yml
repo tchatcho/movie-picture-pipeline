@@ -127,6 +127,7 @@ jobs:
           kubectl get svc -A
           BE_SERVICE_URL=$(kubectl get svc backend -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
             echo "BE_SERVICE_URL=${BE_SERVICE_URL}"
+            echo "::set-output name=be_service_url::${BE_SERVICE_URL}" 
 
       - name: Build and tag Docker image  
         run: |
